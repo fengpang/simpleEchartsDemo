@@ -20,10 +20,17 @@ exports.cssLoaders = function (options) {
       sourceMap: options.sourceMap
     }
   }
-
+  function resolveResouce(name) {
+    return path.resolve(__dirname, '../src/css/theme/' + name);
+  }
   // generate loader string to be used with extract text plugin
   function generateLoaders (loader, loaderOptions) {
-    const loaders = [cssLoader]
+    const loaders = [cssLoader,'sass-loader',  {
+      loader:'sass-resources-loader',
+      options:{
+        resources:[resolveResouce('index.scss')]
+      }
+    }];
     if (loader) {
       loaders.push({
         loader: loader + '-loader',
@@ -50,8 +57,8 @@ exports.cssLoaders = function (options) {
     css: generateLoaders(),
     postcss: generateLoaders(),
     less: generateLoaders('less'),
-    sass: generateLoaders('sass', { indentedSyntax: true }),
-    scss: generateLoaders('sass'),
+    sass: generateLoaders(),
+    scss: generateLoaders(),
     stylus: generateLoaders('stylus'),
     styl: generateLoaders('stylus')
   }

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import baseFrame from '@/components/favorCity'
+import baseFrame from '@/wibgets/favorCity'
 
 Vue.use(Router)
 

@@ -12,8 +12,8 @@ var style = {
   backgroundColor: 'rgba(0,0,0,0.8)'
 };
 
-export function convertRadarData(datas, option) {
-  var value = [], indicator = [], tags = [], name = [];
+export function convertRadarData(datas, option,seriesIndex) {
+  var value = [], indicator = [], tags = [], name = [],radar={},series={};
   datas = datas.filter(function (t) {
     return t.allTotal !== 0;
   });
@@ -22,21 +22,24 @@ export function convertRadarData(datas, option) {
     name.push(t.cnName);
     indicator.push({text: t.cnName, max: t.allTotal})
   });
-
+  radar = (seriesIndex !==undefined) ? option.radar[seriesIndex] : option.radar ;
+  series = (seriesIndex !==undefined) ? option.series[seriesIndex] : option.series[0];
   indicator.forEach(function (t) {
-    if (t.max === 0)  //处理数据全为0的情况；
-    {
+    if (t.max === 0){  //处理数据全为0的情况；
       t.max = 1;
     }
   });
-  option.radar.indicator = indicator;
+  radar.indicator = indicator;
+  const formatterFun = radar.name.formatter || function (val,max) {
+    return (val * 100 / max).toFixed(2)+ '%'
+  }
   tags = indicator.map(function (t, index) {  //默认标签为indicator的text属性，这里需要生成特殊的组合，即显示标签也显示每个维度的得分，
-    return t.text + '：' + (value[index] * 100 / t.max).toFixed(2) + '%';
+    return t.text + '：'+ formatterFun(value[index],t.max);
   });
-  option.name.formatter = function (val) {  //根据默认标签值生成特殊定制的标签值
+  radar.name.formatter = function (val) {  //根据默认标签值生成特殊定制的标签值
     return tags[name.indexOf(val)];
   }
-  option.series[0].data[0].value = value;
+  series.data[0].value = value;
 }
 
 export const addSeparator = val => {
@@ -125,7 +128,7 @@ const CommonAutoTip = function (chart, option, interval, params, callback) {
 CommonAutoTip.prototype = {
   _init: function () {
     if (this.params) {
-      this.loopSeries = this.params.loopSeries || this.loopSeries;
+      this.loopSeries = this.params.loopSeries || this.isRefresh;
       this.seriesIndex = this.loopSeries ? 0 : (this.params.seriesIndex >= 0 ? this.params.seriesIndex : 0);
     }
     this._autoShowTip();
@@ -151,11 +154,11 @@ CommonAutoTip.prototype = {
     let refreshed = false;
 
     //判断是否更新数据
-    /*    if (this.params && this.params.isRefresh && $.isFunction(params.refreshOption) && dataIndex === 0) {
-          params.refreshOption();
-          chart.setOption(option);
+        if (this.params && this.params.isRefresh && this.dataIndex === 0) {
+          this.params.refreshOption();
+          this.chart.setOption(this.option);
           refreshed = true;
-        }*/
+        }
 
     this.chartType = series[this.seriesIndex].type; // 系列类型
     this.dataLength = series[this.seriesIndex].data.length; // 某个系列的数据个数
@@ -417,4 +420,31 @@ RadarAutoTip.prototype = {
     this.config.autoTipState = true;
   }
 };
+export const strongText=(option,info)=> {
+ info = info||{
+    name:'全年其他收入',
+    value:0,
+    unit:'万元'
+  };
+  option.title.text = '{a|'+info.name+':}'+'{b|'+addSeparator( info.value )+'}'+'{c|'+info.unit+'}';
+  option.title.textStyle = {
+    rich: {
+      a: {
+        color: '#8bb8e8',
+        fontSize: 14,
+        fontWeight: 'bold'
+      },
+      b: {
+        color: '#ffcf2a',
+        fontSize: 16,
+        fontWeight: 'bold'
+      },
+      c: {
+        color: '#8bb8e8',
+        fontSize: 14,
+        fontWeight: 'bold'
+      }
+    }
+  }
+}
 

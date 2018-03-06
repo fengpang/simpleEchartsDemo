@@ -3,13 +3,18 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+//import axios from 'axios'
+import frameHeader from './wibgets/frameHeader.vue';
+import './css/style.scss';
+
+//main.js中引入并注册到charts对象上
+
 import echarts from 'echarts'
 import {AutoShowTip} from "./js/tools";
-//import axios from 'axios'
-import frameHeader from './components/frameHeader.vue'
-
-echarts.AutoShowTip = AutoShowTip;  //将自动轮播对象添加到charts对象上
+echarts.AutoShowTip = AutoShowTip;
 Vue.prototype.$echarts = echarts;
+
+
 //Vue.prototype.$http = axios;
 Vue.config.productionTip = false;
 Vue.component('frame-header',frameHeader);
