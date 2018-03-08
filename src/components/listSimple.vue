@@ -8,7 +8,7 @@
 <template>
   <!--定义标题边框，并预留内容边框-->
 
-  <div class="simple-list-module" :class="{ 'small-height':config.appendClass }">
+  <div ref ="mountPoint"  class="simple-list-module" :class="{ 'small-height':config.appendClass }">
     <div class="simple-list-unit" v-if="bindData.unit">
       单位：{{ bindData.unit }}
     </div>
@@ -79,8 +79,8 @@
       };
     },
     mounted(){
-      this.config.height = this.$el.clientHeight;
-      this.config.width = this.$el.clientWidth;
+      this.config.height = this.$refs.mountPoint.clientHeight;
+      this.config.width = this.$refs.mountPoint.clientWidth;
       this.init();
     },
     methods:{
@@ -104,7 +104,6 @@
         config.lineHeight = parameter.lineHeight;
         config.moduleHeight = config.scrollLength * config.lineHeight;
         config.marginStyle = this._calMargin(config.lineHeight-config.contentHeight);
-        console.log(config);
         this.updateDom();
       },
       _calMargin:function (height) {
